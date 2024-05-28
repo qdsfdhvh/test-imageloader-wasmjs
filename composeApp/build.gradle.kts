@@ -63,6 +63,7 @@ kotlin {
             implementation(compose.ui)
             implementation(compose.components.resources)
             implementation(compose.components.uiToolingPreview)
+            implementation("io.github.qdsfdhvh:image-loader:1.8.0")
         }
         desktopMain.dependencies {
             implementation(compose.desktop.currentOs)
@@ -115,6 +116,22 @@ compose.desktop {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
             packageName = "com.seiko.test.demo"
             packageVersion = "1.0.0"
+        }
+    }
+}
+
+applyKtorWasmWorkaround("3.0.0-wasm2")
+
+fun Project.applyKtorWasmWorkaround(version: String) {
+    configurations.all {
+        if (name.startsWith("wasmJs")) {
+            resolutionStrategy.eachDependency {
+                if (requested.group.startsWith("io.ktor") &&
+                    requested.name.startsWith("ktor-")
+                ) {
+                    useVersion(version)
+                }
+            }
         }
     }
 }
